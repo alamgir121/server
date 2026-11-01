@@ -30,6 +30,6 @@ export async function requireAuth(req: Request, res: Response, next: NextFunctio
     };
     next();
   } catch {
-    res.status(401).json({ message: "Your session is invalid or has expired. Please log in again." });
+    res.status(401).json({ message:  "Your session is invalid or has expired. Please log in again." });
   }
 }
