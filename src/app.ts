@@ -65,7 +65,7 @@ app.get(
   })
 );
 
-// PRIVATE: events created by the logged-in user
+
 app.get(
   "/my-events",
   requireAuth,
@@ -76,7 +76,7 @@ app.get(
   })
 );
 
-// PRIVATE: events joined by the logged-in user, sorted by event date
+
 app.get(
   "/my-joined",
   requireAuth,
@@ -94,7 +94,7 @@ app.get(
   })
 );
 
-// PUBLIC: event details (no login needed)
+
 app.get(
   "/events/:id",
   h(async (req, res) => {
@@ -107,7 +107,7 @@ app.get(
   })
 );
 
-// PRIVATE: has the current user joined this event?
+
 app.get(
   "/events/:id/joined",
   requireAuth,
@@ -169,7 +169,7 @@ app.delete(
   })
 );
 
-// PRIVATE: join event
+
 app.post(
   "/events/:id/join",
   requireAuth,
