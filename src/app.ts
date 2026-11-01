@@ -33,7 +33,7 @@ const escapeRegex = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
 
 async function attachCounts(docs: Document[]): Promise<Document[]> {
-  if (!docs.length) return docs;
+  if ( !docs.length) return docs;
   const db = await getDb();
   const counts = await db
     .collection("joins")
