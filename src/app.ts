@@ -24,7 +24,7 @@ const origins = (process.env.CLIENT_URL || "http://localhost:3000").split(",").m
 app.use(cors({ origin: origins }));
 app.use(express.json());
 
-type Handler = (req: AuthedRequest, res: Response) => Promise<unknown>;
+type Handler   = (req: AuthedRequest, res: Response) => Promise<unknown>;
 const h = (fn: Handler): RequestHandler => (req, res, next) => {
   fn(req as AuthedRequest, res).catch(next);
 };
