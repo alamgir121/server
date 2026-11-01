@@ -15,10 +15,7 @@ function getJwks() {
   return jwks;
 }
 
-/**
- * Verifies the Bearer JWT issued by BetterAuth (jwt plugin) against the client's public JWKS.
- * No secret is shared between the client and the API.
- */
+
 export async function requireAuth(req: Request, res: Response, next: NextFunction) {
   const header = req.headers.authorization;
   if (!header?.startsWith("Bearer ")) {
