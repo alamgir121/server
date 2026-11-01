@@ -20,7 +20,7 @@ const eventSchema = z.object({
 });
 
 const app = express();
-const origins = (process.env.CLIENT_URL || "http://localhost:3000").split(",").map((o) => o.trim().replace(/\/$/, ""));
+const origins = ('process.env.CLIENT_URL || ${process.env.CLIENT_URL}').split(",").map((o) => o.trim().replace(/\/$/, ""));
 app.use(cors({ origin: origins }));
 app.use(express.json());
 
