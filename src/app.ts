@@ -10,7 +10,7 @@ export const EVENT_TYPES = ["Cleanup", "Plantation", "Donation", "Blood Drive", 
 
 const eventSchema = z.object({
   title: z.string().trim().min(5, "Title must be at least 5 characters."),
-  description: z.string().trim().min(20, "Description must be at least 20 characters."),
+  description: z.string().trim().min(15, "Description must be at least 15 characters."),
   type: z.enum(EVENT_TYPES, { errorMap: () => ({ message: "Choose an event type." }) }),
   thumbnail: z.string().trim().url("Enter a valid image URL."),
   location: z.string().trim().min(3, "Enter where the event will take place."),
