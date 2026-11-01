@@ -31,7 +31,7 @@ const h = (fn: Handler): RequestHandler => (req, res, next) => {
 const toId = (id: string) => (ObjectId.isValid(id) ? new ObjectId(id) : null);
 const escapeRegex = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
-/** Adds `joinedCount` (participants) to a list of event documents. */
+
 async function attachCounts(docs: Document[]): Promise<Document[]> {
   if (!docs.length) return docs;
   const db = await getDb();
@@ -47,7 +47,7 @@ app.get("/", (_req, res) => {
   res.json({ name: "HelpingHands BD API", status: "ok" });
 });
 
-// PUBLIC: upcoming events only, soonest first. Home page uses ?limit=6
+
 app.get(
   "/events",
   h(async (req, res) => {
@@ -120,7 +120,7 @@ app.get(
   })
 );
 
-// PRIVATE: create event
+
 app.post(
   "/events",
   requireAuth,
@@ -134,7 +134,7 @@ app.post(
   })
 );
 
-// PRIVATE: update event (owner only)
+
 app.put(
   "/events/:id",
   requireAuth,
@@ -152,7 +152,7 @@ app.put(
   })
 );
 
-// PRIVATE: delete event (owner only) and its joins
+
 app.delete(
   "/events/:id",
   requireAuth,
