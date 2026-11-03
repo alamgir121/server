@@ -5,14 +5,19 @@ import { Db, Document, Filter, MongoClient, ObjectId } from "mongodb";
 import { createRemoteJWKSet, jwtVerify } from "jose";
 import { z } from "zod";
 
-// ---------------------------------------------------------------- database
+
 let client: MongoClient | null = null;
 let indexed = false;
 
 export async function getDb(): Promise<Db> {
   if (!client) {
-    if (!process.env.MONGODB_URI) throw new Error("MONGODB_URI ");
-    client = new MongoClient(process.env.MONGODB_URI);
+    if (!process.env.MONGODB_URI) throw new Error("MONGODB_URI is not set on the server.");
+   
+    client = new MongoClient(process.env.MONGODB_URI, {
+      serverSelectionTimeoutMS: 6000,
+      connectTimeoutMS: 6000,
+      maxPoolSize: 5,
+    });
   }
   await client.connect();
   const db = client.db(process.env.DB_NAME || "community_events");
@@ -24,7 +29,7 @@ export async function getDb(): Promise<Db> {
   return db;
 }
 
-// -------------------------------------------------------------------- auth
+
 export interface AuthedRequest extends Request {
   user?: { email: string; name: string };
 }
@@ -57,7 +62,7 @@ export async function requireAuth(req: Request, res: Response, next: NextFunctio
   }
 }
 
-// --------------------------------------------------------------------- app
+
 export const EVENT_TYPES = ["Cleanup", "Plantation", "Donation", "Blood Drive", "Education", "Health Camp", "Other"] as const;
 
 const eventSchema = z.object({
@@ -72,7 +77,8 @@ const eventSchema = z.object({
 });
 
 const app = express();
-app.use(cors());
+app.use(cors({ origin: true, methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"], allowedHeaders: ["Content-Type", "Authorization"] }));
+app.options("*", cors());
 app.use(express.json());
 type Handler = (req: AuthedRequest, res: Response) => Promise<unknown>;
 const h = (fn: Handler): RequestHandler => (req, res, next) => {
@@ -95,6 +101,16 @@ async function attachCounts(docs: Document[]): Promise<Document[]> {
 app.get("/", (_req, res) => {
   res.json({ name: "HelpingHands BD API", status: "ok" });
 });
+
+
+app.get(
+  "/health",
+  h(async (_req, res) => {
+    const db = await getDb();
+    await db.command({ ping: 1 });
+    res.json({ status: "ok", db: "connected" });
+  })
+);
 
 app.get(
   "/events",
@@ -239,6 +255,11 @@ app.post(
 
 app.use((err: unknown, _req: Request, res: Response, _next: NextFunction) => {
   console.error(err);
+  const name = (err as { name?: string })?.name || "";
+  if (name.startsWith("MongoServerSelection") || name.startsWith("MongoNetwork") || name === "MongoParseError") {
+    
+    return res.status(503).json({ message: "The database is temporarily unreachable. Please try again shortly." });
+  }
   res.status(500).json({ message: "Something went wrong on our side. Please try again." });
 });
 
